@@ -6,11 +6,11 @@ const root_dir = require('../util/path');
 products = [];
 
 router.get('/add-product', (req, res, next) => {
-    res.sendFile(path.join(root_dir, 'views', 'add-product.html'));
+    res.render('add-product', { pageTitle: 'add product', path: '/add-product' });
 });
 
 router.post('/add-product', (req, res, next) => {
-    this.products.push({ pageTitle: req.body.title, path: '/add-product' });
+    this.products.push({ pageTitle: req.body.title });
     res.redirect('/');
 });
 
