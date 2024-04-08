@@ -21,19 +21,22 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    Product.getAllProducts(products => {
-        res.render('shop/cart', {
-            pageTitle: 'Cart',
-            path: '/cart'
-        });
+    res.render('shop/cart', {
+        pageTitle: 'Cart',
+        path: '/cart'
     });
 };
 
 exports.getCheckout = (req, res, next) => {
-    Product.getAllProducts(products => {
-        res.render('shop/checkout', {
-            pageTitle: 'Checkout',
-            path: '/checkout'
-        });
+    res.render('shop/checkout', {
+        pageTitle: 'Checkout',
+        path: '/checkout'
+    });
+};
+
+exports.getOrders = (req, res, next) => {
+    res.render('shop/orders', {
+        pageTitle: 'Your Orders',
+        path: '/orders'
     });
 };

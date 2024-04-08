@@ -10,4 +10,6 @@ router.get('/cart', shop_controller.getCart);
 
 router.get('/checkout', shop_controller.getCheckout);
 
+router.get('/orders', shop_controller.getOrders);
+
 module.exports = router;
