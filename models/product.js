@@ -11,7 +11,10 @@ function getProductsFromFile(cb) {
 };
 
 module.exports = class Product {
+    static cnt = 1;
+
     constructor(title, price, description, imageUrl) {
+        this.id = (Product.cnt++).toString();
         this.title = title;
         this.price = price;
         this.description = description;
@@ -29,5 +32,12 @@ module.exports = class Product {
 
     static getAllProducts(cb) {
         getProductsFromFile(cb);
+    }
+
+    static getProductByID(id, cb) {
+        getProductsFromFile(products => {
+            const product = products.find(prod => prod.id === id);
+            cb(product);
+        })
     }
 };
