@@ -13,8 +13,8 @@ function getProductsFromFile(cb) {
 module.exports = class Product {
     static cnt = 1;
 
-    constructor(title, price, description, imageUrl) {
-        this.id = (Product.cnt++).toString();
+    constructor(id, title, price, description, imageUrl) {
+        this.id = (id ? id : (Product.cnt++).toString());
         this.title = title;
         this.price = price;
         this.description = description;
@@ -23,7 +23,9 @@ module.exports = class Product {
 
     save() {
         getProductsFromFile(products => {
-            products.push(this);
+            const idx = products.findIndex(prod => prod.id === this.id);
+            if (!products[idx]) products.push(this);
+            else products[idx] = this;
             fs.writeFile(p, JSON.stringify(products), err => {
                 console.log(err);
             });
