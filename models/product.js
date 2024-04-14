@@ -12,10 +12,8 @@ function getProductsFromFile(cb) {
 };
 
 module.exports = class Product {
-    static cnt = 1;
-
     constructor(id, title, price, description, imageUrl) {
-        this.id = (id ? id : (Product.cnt++).toString());
+        this.id = (id ? id : Math.random().toString());
         this.title = title;
         this.price = price;
         this.description = description;
@@ -29,12 +27,7 @@ module.exports = class Product {
                 products.push(this);
             }
             else {
-                const old_price = products[idx].price;
-                const new_price = this.price;
                 products[idx] = this;
-                if (old_price !== new_price) {
-                    Cart.modifyTotalPrice(this.id, old_price, new_price);
-                }
             }
 
             fs.writeFile(p, JSON.stringify(products), err => {
@@ -46,11 +39,11 @@ module.exports = class Product {
     static delete(id) {
         getProductsFromFile(products => {
             const idx = products.findIndex(prod => prod.id === id);
-            const price = products[idx].price;
             products.splice(idx, 1);
+
             fs.writeFile(p, JSON.stringify(products), err => {
                 if (!err) {
-                    Cart.deleteProduct(id, price);
+                    Cart.deleteProduct(id);
                 }
             });
         });
