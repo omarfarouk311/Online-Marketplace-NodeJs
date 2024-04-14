@@ -28,8 +28,9 @@ module.exports = class Cart {
             if (err) return;
             const cart = JSON.parse(data);
             const idx = cart.findIndex(prod => prod.id === id);
+            if (idx === -1) return;
             cart.splice(idx, 1);
-            
+
             fs.writeFile(p, JSON.stringify(cart), err => {
                 console.log(err);
             });
