@@ -5,10 +5,8 @@ const admin_router = require('./routes/admin');
 const shop_router = require('./routes/shop');
 const errors_controller = require('./controllers/errors');
 const sequelize = require('./util/database');
-const Product = require('./models/product');
 const User = require('./models/user');
-const Cart = require('./models/cart');
-const cart_item = require('./models/cart item');
+const associations = require('./util/associations');
 
 const app = express();
 
@@ -35,10 +33,7 @@ app.use(shop_router);
 
 app.use(errors_controller.getPageNotFound);
 
-User.hasMany(Product, { constraints: true, onDelete: 'CASCADE' });
-User.hasOne(Cart, { constraints: true, onDelete: 'CASCADE' });
-Cart.belongsToMany(Product, { through: cart_item });
-Product.belongsToMany(Cart, { through: cart_item });
+associations();
 
 (async () => {
     try {
