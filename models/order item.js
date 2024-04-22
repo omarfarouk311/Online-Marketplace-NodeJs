@@ -6,5 +6,9 @@ module.exports = sequelize.define('orderItem', {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+    },
+    quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     }
 });

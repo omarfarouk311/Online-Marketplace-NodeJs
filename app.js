@@ -7,7 +7,6 @@ const errors_controller = require('./controllers/errors');
 const sequelize = require('./util/database');
 const User = require('./models/user');
 const associations = require('./util/associations');
-
 const app = express();
 
 app.set('view engine', 'ejs');
