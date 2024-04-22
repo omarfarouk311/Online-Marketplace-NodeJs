@@ -37,7 +37,7 @@ associations();
 
 (async () => {
     try {
-        await sequelize.sync();
+        await sequelize.sync({ force: false });
 
         let user = await User.findByPk(1);
         if (!user) {
