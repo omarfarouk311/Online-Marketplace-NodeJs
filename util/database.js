@@ -1,5 +1,18 @@
-const Sequelize = require('sequelize').Sequelize;
+const mongodb = require('mongodb');
+let db;
 
-const sequelize = new Sequelize('online-marketplace', 'root', 'omar2003', { dialect: 'mysql', host: 'localhost' });
+exports.mongoConnect = async cb => {
+    try {
+        const client = await mongodb.MongoClient.connect('mongodb+srv://omarfarouk219:omar2023@cluster0.nffrsqt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
+        db = client.db("shop");
+        cb();
+    }
+    catch (err) {
+        console.log(err);
+    }
+};
 
-module.exports = sequelize;
+exports.getDb = () => {
+    if (db) return db;
+    throw new Error("db isn't defined");
+}

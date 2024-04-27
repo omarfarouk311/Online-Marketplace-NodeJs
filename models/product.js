@@ -1,26 +1,34 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../util/database');
+const mongodb = require('mongodb');
+const getDb = require('../util/database').getDb;
 
-module.exports = sequelize.define('product', {
-    id: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    title: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    price: {
-        type: Sequelize.DOUBLE,
-        allowNull: false
-    },
-    description: {
-        type: Sequelize.TEXT,
-        allowNull: false
-    },
-    imageUrl: {
-        type: Sequelize.STRING,
-        allowNull: false
+module.exports = class Products {
+
+    constructor(title, price, description, imageUrl, id) {
+        this.title = title;
+        this.price = price;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this._id = id ? mongodb.ObjectId.createFromHexString(id) : id;
     }
-});
+
+    save() {
+        const db = getDb();
+        if (!this._id) return db.collection('products').insertOne(this);
+        return db.collection('products').updateOne({ _id: this._id, }, { $set: this });
+    }
+
+    static fetchAll() {
+        const db = getDb();
+        return db.collection('products').find().toArray();
+    }
+
+    static findById(id) {
+        const db = getDb();
+        return db.collection('products').findOne({ _id: mongodb.ObjectId.createFromHexString(id) });
+    }
+
+    static deleteById(id) {
+        const db = getDb();
+        return db.collection('products').deleteOne({ _id: mongodb.ObjectId.createFromHexString(id) });
+    }
+}
