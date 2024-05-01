@@ -29,11 +29,9 @@ exports.getProductDetails = async (req, res, next) => {
 
 exports.getCart = async (req, res, next) => {
     const cartProducts = await req.user.getCart();
-
-    let totalPrice = 0;
-    for (const prod of cartProducts) {
-        totalPrice += prod.price * prod.quantity;
-    }
+    const totalPrice = cartProducts.reduce((sum, cp) => {
+        cp.price * cp.quantity
+    }, 0);
 
     res.render('shop/cart', {
         pageTitle: 'Cart',
@@ -44,9 +42,8 @@ exports.getCart = async (req, res, next) => {
 };
 
 exports.addToCart = async (req, res, next) => {
-    const added = await req.user.addToCart(req.body.productId)
-    if (added) res.redirect('/cart');
-    else res.redirect('/');
+    await req.user.addToCart(req.body.productId)
+    res.redirect('/cart');
 };
 
 exports.deleteCartItem = async (req, res, next) => {
