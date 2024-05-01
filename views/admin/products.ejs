@@ -6,7 +6,7 @@
         <%- include('../includes/navigation.ejs') %>
 
             <main>
-                <% if (prods.length > 0) { %>
+                <% if (prods.length> 0) { %>
                     <div class="grid">
                         <% for (let product of prods) { %>
                             <article class="card product-item">
@@ -19,12 +19,27 @@
                                     <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
                                 </div>
                                 <div class="card__content">
-                                    <h2 class="product__price">$
-                                        <%= product.price %>
+                                    <h2 class="product__price">
+                                        <%= product.price %>$
                                     </h2>
                                     <p class="product__description">
                                         <%= product.description %>
                                     </p>
+                                    <% if (product.productQuantity> 0) { %>
+                                        <% if (product.productQuantity> 3) { %>
+                                            <h2 class="product__availability in-stock">
+                                                In stock
+                                            </h2>
+                                            <% } else { %>
+                                                <h2 class="product__availability low-stock">
+                                                    <%= `Only ${product.productQuantity} left in stock` %>
+                                                </h2>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <h2 class="product__availability out-of-stock">
+                                                            Out of stock!
+                                                        </h2>
+                                                        <% } %>
                                 </div>
                                 <div class="card__actions">
                                     <a href="/admin/edit-product/<%= product._id %>?edit=true" class="btn">Edit</a>

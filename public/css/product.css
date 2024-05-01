@@ -25,3 +25,18 @@
 .product__description {
     text-align: center;
 }
+
+.in-stock {
+    color: green;
+    text-align: center;
+}
+
+.out-of-stock {
+    color: red;
+    text-align: center;
+}
+
+.low-stock {
+    color: red;
+    text-align: center;
+}

@@ -1,34 +1,34 @@
-const mongodb = require('mongodb');
+const { ObjectId } = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 module.exports = class Products {
 
-    constructor(title, price, description, imageUrl, id) {
+    constructor(title, price, description, imageUrl, productQuantity, id) {
         this.title = title;
-        this.price = price;
+        this.price = +price;
         this.description = description;
         this.imageUrl = imageUrl;
-        this._id = id ? mongodb.ObjectId.createFromHexString(id) : id;
+        this.productQuantity = +productQuantity;
+        this._id = id ? ObjectId.createFromHexString(id) : id;
     }
 
-    save() {
+    static async fetchAll() {
         const db = getDb();
-        if (!this._id) return db.collection('products').insertOne(this);
-        return db.collection('products').updateOne({ _id: this._id, }, { $set: this });
+        try {
+            return db.collection('products').find().toArray();
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
-    static fetchAll() {
+    static async findById(id) {
         const db = getDb();
-        return db.collection('products').find().toArray();
-    }
-
-    static findById(id) {
-        const db = getDb();
-        return db.collection('products').findOne({ _id: mongodb.ObjectId.createFromHexString(id) });
-    }
-
-    static deleteById(id) {
-        const db = getDb();
-        return db.collection('products').deleteOne({ _id: mongodb.ObjectId.createFromHexString(id) });
+        try {
+            return db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 }

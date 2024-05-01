@@ -205,6 +205,12 @@ form {
   color: white;
 }
 
+.btn.disabled {
+  background-color: #c0c0c0;
+  color: #888888;
+  cursor: default;
+}
+
 .btn.danger {
   color: red;
   border-color: red;
