@@ -35,7 +35,7 @@ exports.postEditProduct = async (req, res, next) => {
 exports.postDeleteProduct = async (req, res, next) => {
     await req.user.deleteProduct(req.body.productId);
     res.redirect('/admin/products');
-};
+ };
 
 exports.getProducts = async (req, res, next) => {
     const products = await req.user.fetchUserProducts();

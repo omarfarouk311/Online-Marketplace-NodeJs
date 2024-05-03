@@ -138,7 +138,7 @@ module.exports = class User {
     async deleteFromCart(productId) {
         const db = getDb();
         try {
-            const result = await db.collection('users').updateOne(
+            await db.collection('users').updateOne(
                 { _id: this._id },
                 { $pull: { cart: { productId: ObjectId.createFromHexString(productId) } } }
             );
@@ -150,11 +150,70 @@ module.exports = class User {
 
     async createOrder() {
         const db = getDb();
+        const client = getClient();
+        const session = client.startSession();
+        let cartProducts = []
+        let totalPrice = 0;
 
+        try {
+            session.startTransaction();
+
+            cartProducts = await this.getCart();
+            if (!cartProducts.length) return 1;
+
+            for (const prod of cartProducts) {
+                if (prod.productQuantity < prod.quantity) {
+                    await session.abortTransaction();
+                    return 0;
+                }
+                totalPrice += prod.price * prod.quantity;
+            }
+
+            for (const cp of cartProducts) {
+                await db.collection('products').updateOne(
+                    { _id: cp._id },
+                    { $inc: { productQuantity: -cp.quantity } },
+                    { session }
+                );
+            }
+
+            await session.commitTransaction();
+        }
+        catch (err) {
+            console.log(err);
+            await session.abortTransaction();
+        }
+        finally {
+            await session.endSession();
+        }
+
+        try {
+            const result = await db.collection('orders').insertOne(
+                { items: cartProducts, totalPrice: totalPrice }
+            );
+
+            await db.collection('users').updateOne(
+                { _id: this._id },
+                { $push: { orders: result.insertedId } }
+            );
+
+            await db.collection('users').updateOne(
+                { _id: this._id },
+                { $set: { cart: [] } }
+            );
+
+            return 1;
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     async getOrders() {
         const db = getDb();
-
+        const orders = await db.collection('orders').find(
+            { _id: { $in: this.orders } }
+        ).toArray();
+        return orders;
     }
 }

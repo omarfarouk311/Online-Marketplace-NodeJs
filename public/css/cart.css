@@ -26,3 +26,13 @@
 .total-price {
   text-align: center;
 }
+
+.order-pending {
+  text-align: center;
+  color: red;
+}
+
+.disabled-button {
+  opacity: 0.5;
+  cursor: default;
+}

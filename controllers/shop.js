@@ -29,15 +29,21 @@ exports.getProductDetails = async (req, res, next) => {
 
 exports.getCart = async (req, res, next) => {
     const cartProducts = await req.user.getCart();
-    const totalPrice = cartProducts.reduce((sum, cp) => {
-        cp.price * cp.quantity
-    }, 0);
+    let totalPrice = 0;
+    let canMakeOrder = true;
+    cartProducts.forEach(cp => {
+        totalPrice += cp.price;
+        if (cp.productQuantity < cp.quantity) {
+            canMakeOrder = false;
+        }
+    });
 
     res.render('shop/cart', {
         pageTitle: 'Cart',
         path: '/cart',
         products: cartProducts,
-        totalPrice: totalPrice
+        totalPrice: totalPrice,
+        canMakeOrder: canMakeOrder
     });
 };
 
@@ -52,11 +58,13 @@ exports.deleteCartItem = async (req, res, next) => {
 };
 
 exports.CreateOrder = async (req, res, next) => {
+    const done = req.user.createOrder();
+    if (!done) res.redirect('/cart');
     res.redirect('/orders');
 };
 
 exports.getOrders = async (req, res, next) => {
-    const user_orders = [];
+    const user_orders = await req.user.getOrders();
     res.render('shop/orders', {
         pageTitle: 'Your Orders',
         path: '/orders',
