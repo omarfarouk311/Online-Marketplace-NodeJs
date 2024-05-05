@@ -15,7 +15,7 @@ module.exports = class Products {
     static async fetchAll() {
         const db = getDb();
         try {
-            return db.collection('products').find().toArray();
+            return await db.collection('products').find().toArray();
         }
         catch (err) {
             console.log(err);
@@ -25,7 +25,7 @@ module.exports = class Products {
     static async findById(id) {
         const db = getDb();
         try {
-            return db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
+            return await db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
         }
         catch (err) {
             console.log(err);

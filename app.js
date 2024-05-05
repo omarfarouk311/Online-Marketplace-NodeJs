@@ -27,16 +27,21 @@ app.use(session({
 }));
 
 app.use(async (req, res, next) => {
-    if (req.session && req.session.userId) {
-        const user = await User.findById(req.session.userId);
-        req.user = new User(user.username, user.email, user.products, user.cart, user.orders, user._id);
+    try {
+        if (req.session && req.session.userId) {
+            const user = await User.findById(req.session.userId);
+            req.user = new User(user.username, user.email, user.products, user.cart, user.orders, user._id);
+        }
+        next()
     }
-    next();
-})
+    catch (err) {
+        console.log(err);
+    }
+});
 
 app.use('/admin', adminRouter);
 
-app.use('/login', authRouter);
+app.use(authRouter);
 
 app.use(shopRouter);
 
