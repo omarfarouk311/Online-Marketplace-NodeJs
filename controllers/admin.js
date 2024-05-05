@@ -4,7 +4,8 @@ exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
-        editing: req.query.edit
+        editing: req.query.edit,
+        isAuthenticated: req.session.isLoggedIn
     });
 };
 
@@ -21,7 +22,8 @@ exports.getEditProduct = async (req, res, next) => {
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
         product: product,
-        editing: req.query.edit
+        editing: req.query.edit,
+        isAuthenticated: req.session.isLoggedIn
     });
 };
 
@@ -35,13 +37,14 @@ exports.postEditProduct = async (req, res, next) => {
 exports.postDeleteProduct = async (req, res, next) => {
     await req.user.deleteProduct(req.body.productId);
     res.redirect('/admin/products');
- };
+};
 
 exports.getProducts = async (req, res, next) => {
     const products = await req.user.fetchUserProducts();
     res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
-        path: '/admin/products'
+        path: '/admin/products',
+        isAuthenticated: req.session.isLoggedIn
     });
 };

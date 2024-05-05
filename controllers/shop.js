@@ -5,7 +5,8 @@ exports.getIndex = async (req, res, next) => {
     res.render('shop/index', {
         prods: products,
         pageTitle: 'Shop',
-        path: '/'
+        path: '/',
+        isAuthenticated: req.session.isLoggedIn
     });
 };
 
@@ -14,7 +15,8 @@ exports.getProducts = async (req, res, next) => {
     res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
-        path: '/products'
+        path: '/products',
+        isAuthenticated: req.session.isLoggedIn
     });
 };
 
@@ -23,7 +25,8 @@ exports.getProductDetails = async (req, res, next) => {
     res.render('shop/product-detail', {
         pageTitle: product.title,
         product: product,
-        path: '/products'
+        path: '/products',
+        isAuthenticated: req.session.isLoggedIn
     });
 };
 
@@ -31,6 +34,7 @@ exports.getCart = async (req, res, next) => {
     const cartProducts = await req.user.getCart();
     let totalPrice = 0;
     let canMakeOrder = true;
+
     cartProducts.forEach(cp => {
         totalPrice += cp.price;
         if (cp.productQuantity < cp.quantity) {
@@ -43,7 +47,8 @@ exports.getCart = async (req, res, next) => {
         path: '/cart',
         products: cartProducts,
         totalPrice: totalPrice,
-        canMakeOrder: canMakeOrder
+        canMakeOrder: canMakeOrder,
+        isAuthenticated: req.session.isLoggedIn
     });
 };
 
@@ -68,6 +73,7 @@ exports.getOrders = async (req, res, next) => {
     res.render('shop/orders', {
         pageTitle: 'Your Orders',
         path: '/orders',
-        orders: user_orders
+        orders: user_orders,
+        isAuthenticated: req.session.isLoggedIn
     });
 }

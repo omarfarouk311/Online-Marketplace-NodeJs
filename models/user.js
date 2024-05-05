@@ -22,6 +22,16 @@ module.exports = class User {
         }
     }
 
+    static async findById(id) {
+        const db = getDb();
+        try {
+            return await db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) });
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     async saveProduct(product) {
         const db = getDb();
         try {
@@ -42,11 +52,6 @@ module.exports = class User {
         catch (err) {
             console.log(err);
         }
-    }
-
-    static findById(id) {
-        const db = getDb();
-        return db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) });
     }
 
     async fetchUserProducts() {
