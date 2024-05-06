@@ -3,9 +3,9 @@ const getDb = require('../util/database').getDb;
 const getClient = require('../util/database').getClient;
 
 module.exports = class User {
-    constructor(username, email, products, cart, orders, id) {
-        this.username = username;
+    constructor(email, password, products, cart, orders, id) {
         this.email = email;
+        this.password = password;
         this.products = products;
         this.cart = cart;
         this.orders = orders;

@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const BodyParser = require('body-parser');
 const path = require('path');
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
@@ -15,7 +14,7 @@ const app = express();
 
 app.set('view engine', 'ejs');
 
-app.use(BodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
@@ -30,9 +29,9 @@ app.use(async (req, res, next) => {
     try {
         if (req.session && req.session.userId) {
             const user = await User.findById(req.session.userId);
-            req.user = new User(user.username, user.email, user.products, user.cart, user.orders, user._id);
+            req.user = new User(user.email, user.password, user.products, user.cart, user.orders, user._id);
         }
-        next()
+        next();
     }
     catch (err) {
         console.log(err);
