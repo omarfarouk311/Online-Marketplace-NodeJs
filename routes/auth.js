@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/auth');
-const { restrictLogin } = require('../reused middlewares/auth');
+const { restrictLogin } = require('../route protection/auth');
 
 router.get('/login', restrictLogin, authController.getLogin);
 

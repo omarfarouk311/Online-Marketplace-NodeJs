@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const admin_controller = require('../controllers/admin');
-const { requireUser } = require('../reused middlewares/auth');
+const { requireUser } = require('../route protection/auth');
 
 router.get('/add-product', requireUser, admin_controller.getAddProduct);
 

@@ -9,6 +9,7 @@ const session = require('express-session');
 const { mongoConnect } = require('./util/database');
 const { store } = require('./util/database');
 const User = require('./models/user');
+const flash = require('connect-flash');
 
 const app = express();
 
@@ -25,12 +26,15 @@ app.use(session({
     cookie: { maxAge: 60 * 60 * 1000 }
 }));
 
+app.use(flash());
+
 app.use(async (req, res, next) => {
     try {
         if (req.session.userId) {
             const user = await User.findById(req.session.userId);
             req.user = new User(user.email, user.password, user.products, user.cart, user.orders, user._id);
         }
+        res.locals.isAuthenticated = req.session.isLoggedIn
         next();
     }
     catch (err) {

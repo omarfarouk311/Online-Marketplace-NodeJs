@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const shop_controller = require('../controllers/shop');
-const { requireUser } = require('../reused middlewares/auth');
+const { requireUser } = require('../route protection/auth');
 
 router.get('/', shop_controller.getIndex);
 
