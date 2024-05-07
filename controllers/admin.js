@@ -5,7 +5,6 @@ exports.getAddProduct = (req, res, next) => {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
         editing: req.query.edit,
-        isAuthenticated: req.session.isLoggedIn
     });
 };
 
@@ -29,7 +28,6 @@ exports.getEditProduct = async (req, res, next) => {
             path: '/admin/edit-product',
             product: product,
             editing: req.query.edit,
-            isAuthenticated: req.session.isLoggedIn
         });
     }
     catch (err) {
@@ -66,7 +64,6 @@ exports.getProducts = async (req, res, next) => {
             prods: products,
             pageTitle: 'Admin Products',
             path: '/admin/products',
-            isAuthenticated: req.session.isLoggedIn
         });
     }
     catch (err) {
