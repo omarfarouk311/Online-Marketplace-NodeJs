@@ -25,7 +25,7 @@ module.exports = class User {
     static async findById(id) {
         const db = getDb();
         try {
-            return await db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) });
+            return await db.collection('users').findOne({ _id: id });
         }
         catch (err) {
             console.log(err);

@@ -10,13 +10,26 @@ exports.getLogin = (req, res, next) => {
     });
 }
 
-exports.postLogin = (req, res, next) => {
-    req.session.userId = '662d1f851af4b49fbe4f576c';
-    req.session.isLoggedIn = true;
-    req.session.save(err => {
+exports.postLogin = async (req, res, next) => {
+    const db = getDb();
+    const email = req.body.email;
+    const password = req.body.password;
+    try {
+        const user = await db.collection('users').findOne({ email: email });
+        if (!user || !await bcrypt.compare(password, user.password)) {
+            return res.redirect('/login');
+        }
+        req.session.userId = user._id;
+        req.session.isLoggedIn = true;
+        req.session.save(err => {
+            console.log(err);
+            res.redirect('/');
+        });
+    }
+    catch (err) {
         console.log(err);
-        res.redirect('/');
-    });
+        res.redirect('/login');
+    }
 }
 
 exports.postLogout = (req, res, next) => {
