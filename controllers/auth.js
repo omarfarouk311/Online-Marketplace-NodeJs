@@ -100,14 +100,17 @@ exports.postSignup = async (req, res, next) => {
         const user = new User(email, hashedPassword, [], [], []);
         await user.saveUser();
         res.redirect('/login');
-        transporter.sendMail({
-            from: process.env.SENDER_EMAIL,
-            to: email,
-            subject: 'Welcome to marketplace!',
-            html: '<h1>Thank you for choosing our service!</h1>'
-        });
     }
     catch (err) {
         console.log(err);
     }
+
+    transporter.sendMail({
+        from: process.env.SENDER_EMAIL,
+        to: email,
+        subject: 'Welcome to marketplace!',
+        html: '<h1>Thank you for choosing our service!</h1>'
+    }).catch(err => {
+        console.log(err);
+    })
 }
