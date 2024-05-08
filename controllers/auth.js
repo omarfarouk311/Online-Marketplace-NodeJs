@@ -1,6 +1,15 @@
 const bcrypt = require('bcryptjs');
 const { getDb } = require('../util/database');
 const User = require('../models/user');
+const nodemailer = require('nodemailer');
+const mg = require('nodemailer-mailgun-transport');
+
+const transporter = nodemailer.createTransport(mg({
+    auth: {
+        api_key: process.env.MAILGUN_API_KEY,
+        domain: process.env.MAILGUN_DOMAIN
+    }
+}));
 
 exports.getLogin = (req, res, next) => {
     const errors = req.flash('error');
@@ -91,6 +100,12 @@ exports.postSignup = async (req, res, next) => {
         const user = new User(email, hashedPassword, [], [], []);
         await user.saveUser();
         res.redirect('/login');
+        transporter.sendMail({
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: 'Welcome to marketplace!',
+            html: '<h1>Thank you for choosing our service!</h1>'
+        });
     }
     catch (err) {
         console.log(err);
