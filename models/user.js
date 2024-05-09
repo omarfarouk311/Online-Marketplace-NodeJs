@@ -3,19 +3,34 @@ const getDb = require('../util/database').getDb;
 const getClient = require('../util/database').getClient;
 
 module.exports = class User {
-    constructor(email, password, products, cart, orders, id) {
+    constructor(email, password, products, cart, orders, resetToken, resetTokenExpiry, id) {
+        this._id = id;
         this.email = email;
         this.password = password;
         this.products = products;
         this.cart = cart;
         this.orders = orders;
-        this._id = id;
+        this.resetToken = resetToken;
+        this.resetTokenExpiry = resetTokenExpiry;
     }
 
     async saveUser() {
         const db = getDb();
         try {
             await db.collection('users').insertOne(this);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async updateUser() {
+        const db = getDb();
+        try {
+            await db.collection('users').updateOne(
+                { _id: this._id },
+                { $set: this }
+            );
         }
         catch (err) {
             console.log(err);
@@ -32,6 +47,16 @@ module.exports = class User {
         }
     }
 
+    static async findByEmail(email) {
+        const db = getDb();
+        try {
+            return await db.collection('users').findOne({ email: email });
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     async saveProduct(product) {
         const db = getDb();
         try {
@@ -42,7 +67,7 @@ module.exports = class User {
                     { $push: { products: result.insertedId } }
                 );
             }
-            else {
+            else if (this.products.includes(product._id)) {
                 await db.collection('products').updateOne(
                     { _id: product._id },
                     { $set: product }
@@ -65,6 +90,8 @@ module.exports = class User {
     }
 
     async deleteProduct(productId) {
+        if (!this.products.includes(ObjectId.createFromHexString(productId))) return;
+
         const db = getDb();
         try {
             const result = await db.collection('products').deleteOne(
