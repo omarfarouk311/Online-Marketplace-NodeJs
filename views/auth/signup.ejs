@@ -28,6 +28,7 @@
                                 <input type="password" name="confirmPassword" id="confirmPassword"
                                     value="<% if (confirmPassword) { %><%= confirmPassword %><% } %>">
                             </div>
+                            <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
                             <button class="btn" type="submit">Signup</button>
                         </form>
             </main>

@@ -10,6 +10,10 @@ const { mongoConnect } = require('./util/database');
 const { store } = require('./util/database');
 const User = require('./models/user');
 const flash = require('connect-flash');
+const { csrfSynchronisedProtection } = require('csrf-sync').csrfSync({
+    getTokenFromRequest: req => req.body.csrfToken
+});
+
 
 const app = express();
 
@@ -26,6 +30,8 @@ app.use(session({
     cookie: { maxAge: 60 * 60 * 1000 }
 }));
 
+app.use(csrfSynchronisedProtection);
+
 app.use(flash());
 
 app.use(async (req, res, next) => {
@@ -35,6 +41,7 @@ app.use(async (req, res, next) => {
             req.user = new User(user.email, user.password, user.products, user.cart, user.orders, user._id);
         }
         res.locals.isAuthenticated = req.session.isLoggedIn
+        res.locals.csrfToken = req.csrfToken(true);
         next();
     }
     catch (err) {

@@ -179,11 +179,11 @@ exports.getChangePassword = async (req, res, next) => {
         const errors = req.flash('error');
         const [message, password, confirmPassword] = errors;
 
-        res.render('new-password', {
+        res.render('auth/new-password', {
             pageTitle: 'Reset password',
             path: '/reset',
             expired: expired,
-            userId: user._id.toString(),
+            userId: user ? user._id.toString() : null,
             errorMessage: message,
             password: password,
             confirmPassword: confirmPassword,
@@ -201,10 +201,11 @@ exports.postChangePassword = async (req, res, next) => {
     const confirmPassword = req.body.confirmPassword;
     const resetToken = req.body.passwordToken;
     const userId = ObjectId.createFromHexString(req.body.userId);
+    let email;
 
     try {
         const user = await db.collection('users').findOne(
-            { _id: userId, resetToken: resetToken, resetTokenExpiry: Date.now() }
+            { _id: userId, resetToken: resetToken, resetTokenExpiry: { $gt: Date.now() } }
         );
 
         if (!user) {
@@ -221,6 +222,7 @@ exports.postChangePassword = async (req, res, next) => {
             return res.redirect(`/reset/${user.resetToken}`);
         }
 
+        email = user.email;
         const hashedPassword = await bcrypt.hash(password, 15);
         const updatedUser = new User(user.email, hashedPassword, user.products, user.cart, user.orders,
             null, null, user._id);

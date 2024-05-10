@@ -24,6 +24,7 @@
                                     value="<% if (password) { %><%= password %><% } %>">
                             </div>
                             <div class="centered">
+                                <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
                                 <button class="btn" type="submit">Login</button>
                             </div>
                         </form>

@@ -2,4 +2,5 @@
     <button class="btn <%= product.productQuantity > 0 ? '' : 'disabled' %>" type="submit" <%=product.productQuantity> 0
         ? '' : 'disabled' %>>Add to Cart</button>
     <input type="hidden" name="productId" value="<%= product._id %>">
+    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
 </form>
