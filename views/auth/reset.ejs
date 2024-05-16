@@ -15,8 +15,8 @@
                         <form class="login-form" action="/reset" method="POST">
                             <div class="form-control">
                                 <label for="email">E-Mail</label>
-                                <input type="email" name="email" id="email"
-                                    value="<% if (email) { %><%= email %><% } %>">
+                                <input class="<%= validationErrors.email ? 'invalid' : '' %>" type="email" name="email"
+                                    id="email" value="<% if (email) { %><%= email %><% } %>">
                             </div>
                             <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
                             <button class="btn" type="submit">Reset Password</button>
