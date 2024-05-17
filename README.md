@@ -4,6 +4,7 @@ It allows users to register, login, reset password, see details of the products,
 
 <h2>Some details about the project:</h2>
 
+* Applied MVC pattern.
 * Implemented authentication and authorization.
 * Used express-validator to implement input validation and sanitizing.
 * Used MongoDB driver for the database.
