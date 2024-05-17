@@ -35,7 +35,7 @@ app.use(async (req, res, next) => {
     try {
         if (req.session.userId) {
             const user = await User.findById(req.session.userId);
-            req.user = new User(user.email, user.password, user.products, user.cart, user.orders, user._id);
+            req.user = new User(user.email, user.password, user.products, user.cart, user.orders, null, null, user._id);
         }
         res.locals.isAuthenticated = req.session.isLoggedIn
         res.locals.csrfToken = req.csrfToken();

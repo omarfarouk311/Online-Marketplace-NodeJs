@@ -1,16 +1,37 @@
+const { errorMonitor } = require('nodemailer/lib/xoauth2');
 const Product = require('../models/product');
+const { validationResult } = require('express-validator');
 
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
         editing: req.query.edit,
+        errorMessage: undefined,
+        hasError: false,
+        validationErrors: {}
     });
 };
 
 exports.postAddProduct = async (req, res, next) => {
-    const product = new Product(req.body.title, req.body.price, req.body.description, req.body.imageUrl,
-        req.body.quantity);
+    const { title, price, description, imageUrl, quantity } = req.body;
+    const product = new Product(title, price, description, imageUrl, quantity);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        const validationErrors = errors.mapped();
+
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            path: '/admin/add-product',
+            editing: false,
+            errorMessage: errors.array()[0].msg,
+            hasError: true,
+            validationErrors: validationErrors,
+            product: product
+        });
+    }
+
     try {
         await req.user.saveProduct(product);
     }
@@ -26,8 +47,11 @@ exports.getEditProduct = async (req, res, next) => {
         res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
-            product: product,
             editing: req.query.edit,
+            errorMessage: undefined,
+            hasError: false,
+            validationErrors: {},
+            product: product
         });
     }
     catch (err) {
@@ -36,8 +60,24 @@ exports.getEditProduct = async (req, res, next) => {
 };
 
 exports.postEditProduct = async (req, res, next) => {
-    const product = new Product(req.body.title, req.body.price, req.body.description, req.body.imageUrl,
-        req.body.quantity, req.body.productId);
+    const { title, price, description, imageUrl, quantity, productId } = req.body;
+    const product = new Product(title, price, description, imageUrl, quantity, productId);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        const validationErrors = errors.mapped();
+
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Edit Product',
+            path: '/admin/edit-product',
+            editing: true,
+            errorMessage: errors.array()[0].msg,
+            hasError: true,
+            validationErrors: validationErrors,
+            product: product
+        });
+    }
+
     try {
         await req.user.saveProduct(product);
     }

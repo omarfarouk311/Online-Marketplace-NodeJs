@@ -67,7 +67,7 @@ module.exports = class User {
                     { $push: { products: result.insertedId } }
                 );
             }
-            else if (this.products.includes(product._id)) {
+            else if (this.products.find(prodId => prodId.toString() == product._id)) {
                 await db.collection('products').updateOne(
                     { _id: product._id },
                     { $set: product }
@@ -90,7 +90,7 @@ module.exports = class User {
     }
 
     async deleteProduct(productId) {
-        if (!this.products.includes(ObjectId.createFromHexString(productId))) return;
+        if (!this.products.find(prodId => prodId.toString() == productId)) return;
 
         const db = getDb();
         try {

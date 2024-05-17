@@ -18,8 +18,8 @@ router.get('/reset', restrictLogin, authController.getReset);
 
 router.post('/reset', restrictLogin, authValidation.resetValidation, authController.postReset);
 
-router.get('/reset/:token', restrictLogin, authController.getChangePassword);
+router.get('/reset/:token', authController.getChangePassword);
 
-router.post('/new-password', restrictLogin, authValidation.changePasswordValidation, authController.postChangePassword);
+router.post('/new-password', authValidation.changePasswordValidation, authController.postChangePassword);
 
 module.exports = router;
