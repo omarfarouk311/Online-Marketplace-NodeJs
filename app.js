@@ -15,7 +15,6 @@ const { csrfSynchronisedProtection } = require('csrf-sync').csrfSync({
 
 
 const app = express();
-
 app.set('view engine', 'ejs');
 
 app.use(express.urlencoded({ extended: true }));
@@ -32,17 +31,19 @@ app.use(session({
 app.use(csrfSynchronisedProtection);
 
 app.use(async (req, res, next) => {
+    res.locals.isAuthenticated = false;
+    res.locals.csrfToken = req.csrfToken();
+
+    if (!req.session.userId) return next();
     try {
-        if (req.session.userId) {
-            const user = await User.findById(req.session.userId);
-            req.user = new User(user.email, user.password, user.products, user.cart, user.orders, null, null, user._id);
-        }
-        res.locals.isAuthenticated = req.session.isLoggedIn
-        res.locals.csrfToken = req.csrfToken();
-        next();
+        const user = await User.findById(req.session.userId);
+        if (!user) return next();
+        req.user = new User(user.email, user.password, user.products, user.cart, user.orders, null, null, user._id);
+        res.locals.isAuthenticated = true;
+        return next();
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
 });
 
@@ -54,6 +55,19 @@ app.use(shopRouter);
 
 app.use(errorsController.getPageNotFound);
 
-mongoConnect(() => {
-    app.listen(3000);
+app.use((err, req, res, next) => {
+    if (!('isAuthenticated' in res.locals)) {
+        res.locals.isAuthenticated = false;
+    }
+
+    res.status(500).render('errors/500', {
+        pageTitle: 'Error',
+        path: '/500'
+    });
+});
+
+app.listen(3000, () => {
+    mongoConnect().catch(err => {
+        console.log(err);
+    });
 });

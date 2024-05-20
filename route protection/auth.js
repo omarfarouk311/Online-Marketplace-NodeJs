@@ -1,9 +1,9 @@
 exports.requireUser = (req, res, next) => {
-    if (!req.session.isLoggedIn) return res.redirect('/login');
-    next();
+    if (!req.session.userId) return res.redirect('/login');
+    return next();
 }
 
 exports.restrictLogin = (req, res, next) => {
-    if (req.session.isLoggedIn) return res.redirect('/');
-    next();
+    if (req.session.userId) return res.redirect('/');
+    return next();
 }

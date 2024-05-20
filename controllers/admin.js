@@ -1,4 +1,3 @@
-const { errorMonitor } = require('nodemailer/lib/xoauth2');
 const Product = require('../models/product');
 const { validationResult } = require('express-validator');
 
@@ -34,16 +33,20 @@ exports.postAddProduct = async (req, res, next) => {
 
     try {
         await req.user.saveProduct(product);
+        return res.redirect('/admin/products');
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
-    res.redirect('/admin/products');
 };
 
 exports.getEditProduct = async (req, res, next) => {
     try {
         const product = await Product.findById(req.params.productId);
+        if (!product) {
+            return res.redirect('/admin/products');
+        }
+
         res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
@@ -55,7 +58,7 @@ exports.getEditProduct = async (req, res, next) => {
         });
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
 };
 
@@ -80,21 +83,21 @@ exports.postEditProduct = async (req, res, next) => {
 
     try {
         await req.user.saveProduct(product);
+        return res.redirect('/admin/products');
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
-    res.redirect('/admin/products');
 };
 
 exports.postDeleteProduct = async (req, res, next) => {
     try {
         await req.user.deleteProduct(req.body.productId);
+        return res.redirect('/admin/products');
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
-    res.redirect('/admin/products');
 };
 
 exports.getProducts = async (req, res, next) => {
@@ -107,6 +110,6 @@ exports.getProducts = async (req, res, next) => {
         });
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
 };

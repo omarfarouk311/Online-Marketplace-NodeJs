@@ -13,21 +13,11 @@ module.exports = class Products {
 
     static async fetchAll() {
         const db = getDb();
-        try {
-            return await db.collection('products').find().toArray();
-        }
-        catch (err) {
-            console.log(err);
-        }
+        return await db.collection('products').find().toArray();
     }
 
     static async findById(id) {
         const db = getDb();
-        try {
-            return await db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
-        }
-        catch (err) {
-            console.log(err);
-        }
+        return await db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
     }
 }

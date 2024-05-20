@@ -2,9 +2,9 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const User = require('../models/user');
 const { ObjectId } = require('mongodb');
+const getDb = require('../util/database').getDb;
 const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
-const getDb = require('../util/database').getDb;
 const { validationResult } = require('express-validator');
 
 const transporter = nodemailer.createTransport(mg({
@@ -52,22 +52,21 @@ exports.postLogin = async (req, res, next) => {
                 validationErrors: { email: true, password: true }
             });
         }
+
         req.session.userId = user._id;
-        req.session.isLoggedIn = true;
-        req.session.save(err => {
-            console.log(err);
+        return req.session.save(err => {
+            if (err) return next(err);
             res.redirect('/');
         });
     }
     catch (err) {
-        console.log(err);
-        res.redirect('/login');
+        return next(err);
     }
 }
 
 exports.postLogout = (req, res, next) => {
     req.session.destroy(err => {
-        console.log(err);
+        if (err) return next(err);
         res.redirect('/');
     });
 }
@@ -117,7 +116,7 @@ exports.postSignup = async (req, res, next) => {
         });
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
 }
 
@@ -150,10 +149,16 @@ exports.postReset = async (req, res, next) => {
         const user = await User.findByEmail(email);
         const updatedUser = new User(user.email, user.password, user.products, user.cart, user.orders,
             user.resetToken, user.resetTokenExpiry, user._id);
+
         crypto.randomBytes(32, async (err, buf) => {
             if (err) {
-                console.log(err);
-                return res.redirect('/reset');
+                return res.status(500).render('auth/reset', {
+                    pageTitle: 'Reset password',
+                    path: '/reset',
+                    errorMessage: 'Something went wrong, please try again',
+                    email: email,
+                    validationErrors: {}
+                });
             }
 
             updatedUser.resetToken = buf.toString('hex');
@@ -175,7 +180,7 @@ exports.postReset = async (req, res, next) => {
         });
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
 }
 
@@ -202,7 +207,7 @@ exports.getChangePassword = async (req, res, next) => {
         });
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
 }
 
@@ -210,51 +215,44 @@ exports.postChangePassword = async (req, res, next) => {
     const db = getDb();
     const { password, confirmPassword, passwordToken } = req.body;
     const userId = ObjectId.createFromHexString(req.body.userId);
-    let user;
 
     try {
-        user = await db.collection('users').findOne(
+        const user = await db.collection('users').findOne(
             { _id: userId, resetToken: passwordToken, resetTokenExpiry: { $gt: Date.now() } }
         );
-    }
-    catch (err) {
-        console.log(err);
-        user = null;
-    }
 
-    if (!user) {
-        return res.status(401).render('auth/new-password', {
-            pageTitle: 'Reset password',
-            path: '/reset',
-            expired: true,
-            userId: userId,
-            errorMessage: 'Expired link',
-            password: password,
-            confirmPassword: confirmPassword,
-            passwordToken: passwordToken,
-            validationErrors: {}
-        });
-    }
+        if (!user) {
+            return res.status(401).render('auth/new-password', {
+                pageTitle: 'Reset password',
+                path: '/reset',
+                expired: true,
+                userId: userId,
+                errorMessage: 'Expired link',
+                password: password,
+                confirmPassword: confirmPassword,
+                passwordToken: passwordToken,
+                validationErrors: {}
+            });
+        }
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const validationErrors = errors.mapped();
-        const expired = validationErrors.passwordToken ? true : false;
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const validationErrors = errors.mapped();
+            const expired = validationErrors.passwordToken ? true : false;
 
-        return res.status(422).render('auth/new-password', {
-            pageTitle: 'Reset password',
-            path: '/reset',
-            expired: expired,
-            userId: userId,
-            errorMessage: errors.array()[0].msg,
-            password: password,
-            confirmPassword: confirmPassword,
-            passwordToken: passwordToken,
-            validationErrors: validationErrors
-        });
-    }
+            return res.status(422).render('auth/new-password', {
+                pageTitle: 'Reset password',
+                path: '/reset',
+                expired: expired,
+                userId: userId,
+                errorMessage: errors.array()[0].msg,
+                password: password,
+                confirmPassword: confirmPassword,
+                passwordToken: passwordToken,
+                validationErrors: validationErrors
+            });
+        }
 
-    try {
         const email = user.email;
         const hashedPassword = await bcrypt.hash(password, 15);
         const updatedUser = new User(email, hashedPassword, user.products, user.cart, user.orders,
@@ -273,6 +271,6 @@ exports.postChangePassword = async (req, res, next) => {
         });
     }
     catch (err) {
-        console.log(err);
+        return next(err);
     }
 }
