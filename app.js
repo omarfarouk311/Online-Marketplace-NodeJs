@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const crypto = require('crypto');
 const path = require('path');
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
@@ -12,11 +13,33 @@ const User = require('./models/user');
 const { csrfSynchronisedProtection } = require('csrf-sync').csrfSync({
     getTokenFromRequest: req => req.body.csrfToken
 });
-
+const multer = require('multer');
 
 const app = express();
 app.set('view engine', 'ejs');
 
+const storageEngine = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images');
+    },
+    filename: (req, file, cb) => {
+        crypto.randomBytes(8, (err, buf) => {
+            cb(null, buf.toString('hex') + file.originalname);
+        });
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+        cb(null, true);
+    }
+    else {
+        cb(null, false);
+        req.invalidFileType = true;
+    }
+}
+
+app.use(multer({ storage: storageEngine, fileFilter: fileFilter }).single('image'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -66,7 +89,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
     mongoConnect().catch(err => {
         console.log(err);
     });
