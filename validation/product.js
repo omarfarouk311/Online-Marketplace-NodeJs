@@ -8,10 +8,6 @@ exports.ProductValidation = [
         .withMessage('Title length must be at least 3 characters')
         .trim()
     ,
-    body('imageUrl', 'Invalid image url')
-        .isURL()
-        .trim()
-    ,
     body('price', 'Price must be greater than zero')
         .isFloat({
             gt: 0

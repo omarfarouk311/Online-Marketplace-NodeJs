@@ -3,8 +3,8 @@ const getDb = require('../util/database').getDb;
 const getClient = require('../util/database').getClient;
 
 module.exports = class User {
-    constructor(email, password, products, cart, orders, resetToken, resetTokenExpiry, id) {
-        this._id = id;
+    constructor({email, password, products, cart, orders, resetToken, resetTokenExpiry, _id}) {
+        this._id = _id;
         this.email = email;
         this.password = password;
         this.products = products;

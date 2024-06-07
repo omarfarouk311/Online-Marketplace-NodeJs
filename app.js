@@ -61,7 +61,7 @@ app.use(async (req, res, next) => {
     try {
         const user = await User.findById(req.session.userId);
         if (!user) return next();
-        req.user = new User(user.email, user.password, user.products, user.cart, user.orders, null, null, user._id);
+        req.user = new User(user);
         res.locals.isAuthenticated = true;
         return next();
     }

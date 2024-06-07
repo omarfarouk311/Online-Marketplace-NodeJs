@@ -102,7 +102,7 @@ exports.postSignup = async (req, res, next) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 15);
-        const user = new User(email, hashedPassword, [], [], []);
+        const user = new User({ email: email, password: hashedPassword, products: [], cart: [], orders: [] });
         await user.saveUser();
 
         res.redirect('/login');
@@ -147,8 +147,7 @@ exports.postReset = async (req, res, next) => {
 
     try {
         const user = await User.findByEmail(email);
-        const updatedUser = new User(user.email, user.password, user.products, user.cart, user.orders,
-            user.resetToken, user.resetTokenExpiry, user._id);
+        const updatedUser = new User(user);
 
         crypto.randomBytes(32, async (err, buf) => {
             if (err) {
@@ -253,12 +252,12 @@ exports.postChangePassword = async (req, res, next) => {
             });
         }
 
-        const email = user.email;
         const hashedPassword = await bcrypt.hash(password, 15);
-        const updatedUser = new User(email, hashedPassword, user.products, user.cart, user.orders,
-            null, null, user._id);
+        user.resetToken = user.resetTokenExpiry = null;
+        const updatedUser = new User({ ...user, password: hashedPassword });
         await updatedUser.updateUser();
-
+        
+        const email = user.email;
         res.redirect('/login');
         db.collection('sessions').deleteMany({ "session.userId": userId });
         transporter.sendMail({

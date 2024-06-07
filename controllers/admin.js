@@ -13,8 +13,7 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = async (req, res, next) => {
-    const { title, price, description, imageUrl, quantity } = req.body;
-    const product = new Product(title, price, description, imageUrl, quantity);
+    const product = new Product(req.body);
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -63,8 +62,7 @@ exports.getEditProduct = async (req, res, next) => {
 };
 
 exports.postEditProduct = async (req, res, next) => {
-    const { title, price, description, imageUrl, quantity, productId } = req.body;
-    const product = new Product(title, price, description, imageUrl, quantity, productId);
+    const product = new Product(req.body);
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
