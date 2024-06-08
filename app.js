@@ -24,7 +24,7 @@ const storageEngine = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         crypto.randomBytes(8, (err, buf) => {
-            cb(null, buf.toString('hex') + file.originalname);
+            cb(null, buf.toString('hex') + '_' + file.originalname);
         });
     }
 });
@@ -42,6 +42,7 @@ const fileFilter = (req, file, cb) => {
 app.use(multer({ storage: storageEngine, fileFilter: fileFilter }).single('image'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(session({
     secret: [process.env.COOKIE_SECRET1],
@@ -78,16 +79,16 @@ app.use(shopRouter);
 
 app.use(errorsController.getPageNotFound);
 
-app.use((err, req, res, next) => {
-    if (!('isAuthenticated' in res.locals)) {
-        res.locals.isAuthenticated = false;
-    }
+// app.use((err, req, res, next) => {
+//     if (!('isAuthenticated' in res.locals)) {
+//         res.locals.isAuthenticated = false;
+//     }
 
-    res.status(500).render('errors/500', {
-        pageTitle: 'Error',
-        path: '/500'
-    });
-});
+//     res.status(500).render('errors/500', {
+//         pageTitle: 'Error',
+//         path: '/500'
+//     });
+// });
 
 app.listen(process.env.PORT, () => {
     mongoConnect().catch(err => {

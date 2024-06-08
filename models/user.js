@@ -1,9 +1,10 @@
 const { ObjectId } = require('mongodb');
 const getDb = require('../util/database').getDb;
 const getClient = require('../util/database').getClient;
+const fs = require('fs');
 
 module.exports = class User {
-    constructor({email, password, products, cart, orders, resetToken, resetTokenExpiry, _id}) {
+    constructor({ email, password, products, cart, orders, resetToken, resetTokenExpiry, _id }) {
         this._id = _id;
         this.email = email;
         this.password = password;
@@ -64,16 +65,18 @@ module.exports = class User {
         if (!this.products.find(prodId => prodId.toString() == productId)) return;
 
         const db = getDb();
-        const result = await db.collection('products').deleteOne(
+        const result = await db.collection('products').findOneAndDelete(
             { _id: ObjectId.createFromHexString(productId) }
         );
 
-        if (result.deletedCount) {
-            await db.collection('users').updateOne(
-                { _id: this._id },
-                { $pull: { products: ObjectId.createFromHexString(productId) } }
-            );
-        }
+        fs.unlink(result.imageUrl, (err) => {
+            if (err) throw err;
+        })
+
+        await db.collection('users').updateOne(
+            { _id: this._id },
+            { $pull: { products: ObjectId.createFromHexString(productId) } }
+        );
     }
 
     async getCart() {

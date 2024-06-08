@@ -14,6 +14,7 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = async (req, res, next) => {
     const product = new Product(req.body);
+    const image = req.file;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -30,6 +31,19 @@ exports.postAddProduct = async (req, res, next) => {
         });
     }
 
+    if (!image) {
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            path: '/admin/add-product',
+            editing: false,
+            errorMessage: (req.invalidFileType ? "Attached file isn't an image" : 'No image selected for the product'),
+            hasError: true,
+            validationErrors: {},
+            product: product
+        });
+    }
+
+    product.imageUrl = image.path;
     try {
         await req.user.saveProduct(product);
         return res.redirect('/admin/products');
@@ -63,6 +77,7 @@ exports.getEditProduct = async (req, res, next) => {
 
 exports.postEditProduct = async (req, res, next) => {
     const product = new Product(req.body);
+    const image = req.file;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -77,6 +92,22 @@ exports.postEditProduct = async (req, res, next) => {
             validationErrors: validationErrors,
             product: product
         });
+    }
+
+    if (req.invalidFileType) {
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Edit Product',
+            path: '/admin/edit-product',
+            editing: true,
+            errorMessage: "Attached file isn't an image",
+            hasError: true,
+            validationErrors: {},
+            product: product
+        });
+    }
+
+    if (image) {
+        product.imageUrl = image.path;
     }
 
     try {
