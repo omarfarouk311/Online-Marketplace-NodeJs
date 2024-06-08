@@ -79,16 +79,16 @@ app.use(shopRouter);
 
 app.use(errorsController.getPageNotFound);
 
-// app.use((err, req, res, next) => {
-//     if (!('isAuthenticated' in res.locals)) {
-//         res.locals.isAuthenticated = false;
-//     }
+app.use((err, req, res, next) => {
+    if (!('isAuthenticated' in res.locals)) {
+        res.locals.isAuthenticated = false;
+    }
 
-//     res.status(500).render('errors/500', {
-//         pageTitle: 'Error',
-//         path: '/500'
-//     });
-// });
+    res.status(500).render('errors/500', {
+        pageTitle: 'Error',
+        path: '/500'
+    });
+});
 
 app.listen(process.env.PORT, () => {
     mongoConnect().catch(err => {
