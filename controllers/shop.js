@@ -1,4 +1,7 @@
+const path = require('path');
 const Product = require('../models/product');
+const fs = require('fs');
+const path = require('path');
 
 exports.getIndex = async (req, res, next) => {
     try {
@@ -111,4 +114,15 @@ exports.getOrders = async (req, res, next) => {
     catch (err) {
         return next(err);
     }
+}
+
+exports.getInvoice = (req, res, next) => {
+    const { orderId } = req.params;
+    fs.mkdir('data/invoices', { recursive: true }, (err) => {
+        if (err) return next(err);
+        const invoicePath = path.join('data', 'invoices', `invoice_${orderId}.pdf`);
+        return res.download(invoicePath, (err) => {
+            if (err) return next(err);
+        });
+    })
 }
