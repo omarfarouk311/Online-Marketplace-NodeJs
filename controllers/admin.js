@@ -56,10 +56,6 @@ exports.postAddProduct = async (req, res, next) => {
 exports.getEditProduct = async (req, res, next) => {
     try {
         const product = await Product.findById(req.params.productId);
-        if (!product) {
-            return res.redirect('/admin/products');
-        }
-
         res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
