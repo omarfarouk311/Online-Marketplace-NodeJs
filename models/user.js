@@ -62,8 +62,6 @@ module.exports = class User {
     }
 
     async deleteProduct(productId) {
-        if (!this.products.find(prodId => prodId.toString() == productId)) return;
-
         const db = getDb();
         const result = await db.collection('products').findOneAndDelete(
             { _id: ObjectId.createFromHexString(productId) }

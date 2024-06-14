@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const shop_controller = require('../controllers/shop');
-const { requireUser } = require('../route protection/auth');
+const { requireUser } = require('../authorization/auth');
 
 router.get('/', shop_controller.getIndex);
 
@@ -19,6 +19,6 @@ router.post('/create-order', requireUser, shop_controller.CreateOrder);
 
 router.get('/orders', requireUser, shop_controller.getOrders);
 
-router.get('/orders/:orderId', requireUser, shop_controller.getInvoice);
+router.get('/orders/:orderId', requireUser, shop_controller.getOrderInvoice);
 
 module.exports = router;

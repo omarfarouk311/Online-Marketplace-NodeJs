@@ -1,22 +1,22 @@
 const { Router } = require('express');
 const router = Router();
 const authController = require('../controllers/auth');
-const { restrictLogin } = require('../route protection/auth');
+const { restrictLogin, restrictLogout } = require('../authorization/auth');
 const authValidation = require('../validation/auth');
 
 router.get('/login', restrictLogin, authController.getLogin);
 
 router.post('/login', restrictLogin, authValidation.loginValidation, authController.postLogin);
 
-router.post('/logout', authController.postLogout);
+router.post('/logout', restrictLogout, authController.postLogout);
 
 router.get('/signup', restrictLogin, authController.getSignup);
 
 router.post('/signup', restrictLogin, authValidation.signupValidation, authController.postSignup);
 
-router.get('/reset', restrictLogin, authController.getReset);
+router.get('/reset', authController.getReset);
 
-router.post('/reset', restrictLogin, authValidation.resetValidation, authController.postReset);
+router.post('/reset', authValidation.resetValidation, authController.postReset);
 
 router.get('/reset/:token', authController.getChangePassword);
 
