@@ -91,7 +91,21 @@ app.use((err, req, res, next) => {
         res.locals.isAuthenticated = false;
     }
 
-    res.status(500).render('errors/500', {
+    if (err.statusCode === 403) {
+        return res.render('errors/403', {
+            pageTitle: 'Forbidden',
+            path: '/403'
+        });
+    }
+
+    if (err.statusCode === 404) {
+        return res.render('errors/404', {
+            pageTitle: 'Page not found',
+            path: '/404'
+        });
+    }
+
+    return res.render('errors/500', {
         pageTitle: 'Error',
         path: '/500'
     });
