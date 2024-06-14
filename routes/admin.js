@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const router = Router();
 const admin_controller = require('../controllers/admin');
-const { requireUser } = require('../authorization/auth');
-const { ProductValidation } = require('../validation/product');
+const { requireUser } = require('../middlewares/authorization/auth');
+const { ProductValidation } = require('../middlewares/validation/product');
 const { authorizeProductModification } = require('../middlewares/authorization/user');
 
 router.get('/add-product', requireUser, admin_controller.getAddProduct);

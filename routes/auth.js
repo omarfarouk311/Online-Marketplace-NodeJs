@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const router = Router();
 const authController = require('../controllers/auth');
-const { restrictLogin, restrictLogout } = require('../authorization/auth');
-const authValidation = require('../validation/auth');
+const { restrictLogin, restrictLogout } = require('../middlewares/authorization/auth');
+const authValidation = require('../middlewares/validation/auth');
 
 router.get('/login', restrictLogin, authController.getLogin);
 

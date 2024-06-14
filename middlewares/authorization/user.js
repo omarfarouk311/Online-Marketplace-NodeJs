@@ -1,4 +1,4 @@
-const { getDb } = require('../util/database');
+const { getDb } = require('../../util/database');
 
 exports.authorizeProductModification = (req, res, next) => {
     const { productId } = (req.method === 'POST' ? req.body : req.params);

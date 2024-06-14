@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const shop_controller = require('../controllers/shop');
-const { requireUser } = require('../authorization/auth');
+const { requireUser } = require('../middlewares/authorization/auth');
 
 router.get('/', shop_controller.getIndex);
 
