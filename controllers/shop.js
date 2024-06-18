@@ -1,6 +1,9 @@
 const Product = require('../models/product');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
+const PdfDocument = require('pdfkit');
+const { getDb } = require('../util/database');
+const { ObjectId } = require('mongodb');
 
 exports.getIndex = async (req, res, next) => {
     try {
@@ -122,13 +125,40 @@ exports.getOrders = async (req, res, next) => {
     }
 }
 
-exports.getOrderInvoice = (req, res, next) => {
-    const { orderId } = req.params;
-    fs.mkdir('data/invoices', { recursive: true }, (err) => {
-        if (err) return next(err);
+exports.getOrderInvoice = async (req, res, next) => {
+    try {
+        await fs.mkdir('data/invoices', { recursive: true });
+        const db = getDb();
+        const { orderId } = req.params;
+        const order = await db.collection('orders').findOne({ _id: ObjectId.createFromHexString(orderId) });
+        const pdfDoc = new PdfDocument();
         const invoicePath = path.join('data', 'invoices', `invoice_${orderId}.pdf`);
-        return res.download(invoicePath, (err) => {
-            if (err) return next(err);
+
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+        pdfDoc.fontSize(26).text('Invoice', {
+            underline: true
         });
-    })
+        pdfDoc.text('-----------------------');
+        order.items.forEach(prod => {
+            pdfDoc
+                .fontSize(14)
+                .text(
+                    prod.title +
+                    ' - ' +
+                    prod.quantity +
+                    ' x ' +
+                    prod.price + '$'
+                );
+        });
+        pdfDoc.text('---');
+        pdfDoc.fontSize(20).text(`Total Price: ${order.totalPrice}$`);
+        pdfDoc.end();
+
+        return res.download(invoicePath, 'invoice.pdf', (err) => {
+            if (err) throw err;
+        });
+    }
+    catch (err) {
+        return next(err);
+    }
 }
