@@ -1,29 +1,29 @@
 const { getDb } = require('../../util/database');
 const { ObjectId } = require('mongodb');
 
-exports.authorizeProductModification = (req, res, next) => {
+exports.authorizeProductModification = async (req, res, next) => {
     const db = getDb();
     const { productId } = (req.method === 'POST' ? req.body : req.params);
 
     try {
-        const found = db.collection('products').findOne({ _id: ObjectId.createFromHexString(productId) });
+        const found = await db.collection('products').findOne({ _id: ObjectId.createFromHexString(productId) });
         if (!found) {
             const err = new Error('Not found');
             err.statusCode = 404;
             throw err;
         }
+
+        if (!req.user.products.find(prodId => prodId.toString() == productId)) {
+            const err = new Error('Access denied');
+            err.statusCode = 403;
+            throw err;
+        }
+
+        return next();
     }
     catch (err) {
         return next(err);
     }
-
-    if (!req.user.products.find(prodId => prodId.toString() == productId)) {
-        const err = new Error('Access denied');
-        err.statusCode = 403;
-        return next(err);
-    }
-
-    return next();
 }
 
 exports.authorizeInvoiceViewing = async (req, res, next) => {
@@ -47,10 +47,10 @@ exports.authorizeInvoiceViewing = async (req, res, next) => {
             err.statusCode = 403;
             throw err;
         }
+
+        return next();
     }
     catch (err) {
         return next(err);
     }
-
-    return next();
 }

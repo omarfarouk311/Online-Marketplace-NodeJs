@@ -48,11 +48,17 @@ module.exports = class User {
             );
         }
 
-        else if (this.products.find(prodId => prodId.toString() == product._id)) {
-            await db.collection('products').updateOne(
+        else {
+            const result = await db.collection('products').findOneAndUpdate(
                 { _id: product._id },
                 { $set: product }
             );
+
+            if (product.imageUrl !== result.imageUrl) {
+                fs.unlink(result.imageUrl, (err) => {
+                    if (err) throw err;
+                });
+            }
         }
     }
 
@@ -69,7 +75,7 @@ module.exports = class User {
 
         fs.unlink(result.imageUrl, (err) => {
             if (err) throw err;
-        })
+        });
 
         await db.collection('users').updateOne(
             { _id: this._id },

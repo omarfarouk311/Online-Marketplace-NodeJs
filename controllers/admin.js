@@ -79,7 +79,7 @@ exports.postEditProduct = async (req, res, next) => {
     if (!errors.isEmpty()) {
         const validationErrors = errors.mapped();
 
-        return res.status(422).render('admin/edit-product', {
+        return res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
             editing: true,
@@ -91,7 +91,7 @@ exports.postEditProduct = async (req, res, next) => {
     }
 
     if (req.invalidFileType) {
-        return res.status(422).render('admin/edit-product', {
+        return res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
             editing: true,
