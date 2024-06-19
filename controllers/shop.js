@@ -5,15 +5,11 @@ const path = require('path');
 const PdfDocument = require('pdfkit');
 const { getDb } = require('../util/database');
 const { ObjectId } = require('mongodb');
+const { fetchProducts } = require('../util/pagination');
 
 exports.getIndex = async (req, res, next) => {
     try {
-        const products = await Product.fetchAll();
-        res.render('shop/index', {
-            prods: products,
-            pageTitle: 'Shop',
-            path: '/',
-        });
+        await fetchProducts('shop/index', 'Shop', '/', req, res, next);
     }
     catch (err) {
         return next(err);
@@ -22,12 +18,7 @@ exports.getIndex = async (req, res, next) => {
 
 exports.getProducts = async (req, res, next) => {
     try {
-        const products = await Product.fetchAll();
-        res.render('shop/product-list', {
-            prods: products,
-            pageTitle: 'All Products',
-            path: '/products',
-        });
+        await fetchProducts('shop/product-list', 'All Products', '/products', req, res, next);
     }
     catch (err) {
         return next(err);

@@ -117,7 +117,8 @@ exports.postEditProduct = async (req, res, next) => {
 
 exports.postDeleteProduct = async (req, res, next) => {
     try {
-        await req.user.deleteProduct(req.body.productId);
+        const { productId } = req.body;
+        await req.user.deleteProduct(productId);
         return res.redirect('/admin/products');
     }
     catch (err) {
@@ -127,11 +128,24 @@ exports.postDeleteProduct = async (req, res, next) => {
 
 exports.getProducts = async (req, res, next) => {
     try {
-        const products = await req.user.fetchUserProducts();
+        const ITEMS_PER_PAGE = 3;
+        const page = +req.query.page || 1;
+        const numOfProducts = req.user.products.length;
+        const lastPage = Math.ceil(numOfProducts / ITEMS_PER_PAGE);
+        const products = await req.user.fetchUserProducts()
+            .skip(ITEMS_PER_PAGE * (page - 1))
+            .limit(ITEMS_PER_PAGE)
+            .toArray();
         res.render('admin/products', {
             prods: products,
             pageTitle: 'Admin Products',
             path: '/admin/products',
+            currentPage: page,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: lastPage,
+            hasNextPage: page < lastPage,
+            hasPreviousPage: page > 1
         });
     }
     catch (err) {

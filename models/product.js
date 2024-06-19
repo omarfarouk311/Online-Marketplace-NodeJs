@@ -11,9 +11,9 @@ module.exports = class Products {
         this._id = productId ? ObjectId.createFromHexString(productId) : productId;
     }
 
-    static async fetchAll() {
+    static fetchAll() {
         const db = getDb();
-        return await db.collection('products').find().toArray();
+        return db.collection('products').find();
     }
 
     static async findById(id) {

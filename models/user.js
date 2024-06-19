@@ -53,16 +53,12 @@ module.exports = class User {
                 { _id: product._id },
                 { $set: product }
             );
-
-            if (product.imageUrl !== result.imageUrl) {
-                fs.unlink(result.imageUrl);
-            }
         }
     }
 
-    async fetchUserProducts() {
+    fetchUserProducts() {
         const db = getDb();
-        return await db.collection('products').find({ _id: { $in: this.products } }).toArray();
+        return db.collection('products').find({ _id: { $in: this.products } });
     }
 
     async deleteProduct(productId) {
@@ -70,8 +66,6 @@ module.exports = class User {
         const result = await db.collection('products').findOneAndDelete(
             { _id: ObjectId.createFromHexString(productId) }
         );
-
-        fs.unlink(result.imageUrl);
 
         await db.collection('users').updateOne(
             { _id: this._id },
