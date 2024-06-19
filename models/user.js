@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongodb');
 const getDb = require('../util/database').getDb;
 const getClient = require('../util/database').getClient;
-const fs = require('fs');
+const fs = require('fs').promises;
 
 module.exports = class User {
     constructor({ email, password, products, cart, orders, resetToken, resetTokenExpiry, _id }) {
@@ -55,9 +55,7 @@ module.exports = class User {
             );
 
             if (product.imageUrl !== result.imageUrl) {
-                fs.unlink(result.imageUrl, (err) => {
-                    if (err) throw err;
-                });
+                fs.unlink(result.imageUrl);
             }
         }
     }
@@ -73,9 +71,7 @@ module.exports = class User {
             { _id: ObjectId.createFromHexString(productId) }
         );
 
-        fs.unlink(result.imageUrl, (err) => {
-            if (err) throw err;
-        });
+        fs.unlink(result.imageUrl);
 
         await db.collection('users').updateOne(
             { _id: this._id },

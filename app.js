@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const fs = require('fs');
+const fs = require('fs').promises;
 const crypto = require('crypto');
 const path = require('path');
 const adminRouter = require('./routes/admin');
@@ -21,11 +21,14 @@ const app = express();
 app.set('view engine', 'ejs');
 
 const storageEngine = multer.diskStorage({
-    destination: (req, file, cb) => {
-        fs.mkdir('public/images', { recursive: true }, (err) => {
-            if (err) return cb(err);
+    destination: async (req, file, cb) => {
+        try {
+            await fs.mkdir('public/images', { recursive: true });
             cb(null, 'public/images');
-        })
+        }
+        catch (err) {
+            cb(err);
+        }
     },
     filename: (req, file, cb) => {
         crypto.randomBytes(8, (err, buf) => {
