@@ -13,3 +13,4 @@ It allows users to register, login, reset password, see details of the products,
 - Added password reset functionality by sending emails using Mailgun API.
 - Used multer package to handle product's image upload.
 - Generated pdf invoice for each order by using pdfkit package.
+- Implemented pagination on products and orders retrieval.
