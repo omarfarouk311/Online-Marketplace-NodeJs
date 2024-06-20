@@ -1,7 +1,8 @@
 const fsPromises = require('fs').promises;
 const crypto = require('crypto');
+const { diskStorage } = require('multer');
 
-exports.storageEngine = multer.diskStorage({
+exports.storageEngine = diskStorage({
     destination: async (req, file, cb) => {
         try {
             await fsPromises.mkdir('public/images', { recursive: true });
