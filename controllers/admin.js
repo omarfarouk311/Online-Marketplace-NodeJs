@@ -20,7 +20,7 @@ exports.postAddProduct = async (req, res, next) => {
     if (!errors.isEmpty()) {
         const validationErrors = errors.mapped();
 
-        return res.status(422).render('admin/edit-product', {
+        return res.render('admin/edit-product', {
             pageTitle: 'Add Product',
             path: '/admin/add-product',
             editing: false,
@@ -32,7 +32,7 @@ exports.postAddProduct = async (req, res, next) => {
     }
 
     if (!image) {
-        return res.status(422).render('admin/edit-product', {
+        return res.render('admin/edit-product', {
             pageTitle: 'Add Product',
             path: '/admin/add-product',
             editing: false,
@@ -119,10 +119,10 @@ exports.postDeleteProduct = async (req, res, next) => {
     try {
         const { productId } = req.body;
         await req.user.deleteProduct(productId);
-        return res.redirect('/admin/products');
+        return res.status(200).json({ message: 'Success!' });
     }
     catch (err) {
-        return next(err);
+        return res.status(500).json({ message: 'Failed to delete product.' });
     }
 };
 

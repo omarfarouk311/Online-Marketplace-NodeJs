@@ -63,7 +63,7 @@ module.exports = class User {
 
     async deleteProduct(productId) {
         const db = getDb();
-        const result = await db.collection('products').findOneAndDelete(
+        await db.collection('products').findOneAndDelete(
             { _id: ObjectId.createFromHexString(productId) }
         );
 

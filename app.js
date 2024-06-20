@@ -18,8 +18,8 @@ const multer = require('multer');
 const app = express();
 app.set('view engine', 'ejs');
 
-app.use(multer({ storage: storageEngine, fileFilter: fileFilter }).single('image'));
 app.use(express.json());
+app.use(multer({ storage: storageEngine, fileFilter: fileFilter }).single('image'));
 app.use(express.urlencoded({ extended: true }));
 
 //statically serving products images
@@ -50,6 +50,7 @@ app.use(async (req, res, next) => {
         return next();
     }
     catch (err) {
+        console.error(err);
         return next(err);
     }
 });
@@ -60,7 +61,9 @@ app.use(authRouter);
 
 app.use(shopRouter);
 
-app.use(errorsController.getPageNotFound);
+app.use('/error', errorsController.get500);
+
+app.use(errorsController.get404);
 
 app.use((err, req, res, next) => {
     if (!('isAuthenticated' in res.locals)) {
@@ -89,6 +92,6 @@ app.use((err, req, res, next) => {
 
 app.listen(process.env.PORT, () => {
     mongoConnect().catch(err => {
-        console.log(err);
+        console.err(err);
     });
 });
