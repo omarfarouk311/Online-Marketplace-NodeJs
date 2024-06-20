@@ -178,9 +178,8 @@ module.exports = class User {
         return true;
     }
 
-    async getOrders() {
+    getOrders() {
         const db = getDb();
-        const orders = await db.collection('orders').find({ _id: { $in: this.orders } }).toArray();
-        return orders;
+        return db.collection('orders').find({ _id: { $in: this.orders } });
     }
 }

@@ -105,11 +105,25 @@ exports.CreateOrder = async (req, res, next) => {
 
 exports.getOrders = async (req, res, next) => {
     try {
-        const user_orders = await req.user.getOrders();
+        const ITEMS_PER_PAGE = 3;
+        const page = +req.query.page || 1;
+        const numOfOrders = req.user.orders.length;
+        const lastPage = Math.ceil(numOfOrders / ITEMS_PER_PAGE);
+        const userOrders = await req.user.getOrders()
+            .skip(ITEMS_PER_PAGE * (page - 1))
+            .limit(ITEMS_PER_PAGE)
+            .toArray();
+
         res.render('shop/orders', {
             pageTitle: 'Your Orders',
             path: '/orders',
-            orders: user_orders,
+            orders: userOrders,
+            currentPage: page,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: lastPage,
+            hasNextPage: page < lastPage,
+            hasPreviousPage: page > 1
         });
     }
     catch (err) {

@@ -18,13 +18,16 @@
                                                 <%= product.title %> (<%= product.quantity %>)
                                             </li>
                                             <% }); %>
+                                                <h2 class="total-price">
+                                                    Total Price: <%= order.totalPrice %>$
+                                                </h2>
                                     </ul>
                                 </li>
-                                <h2 class="total-price">
-                                    Total Price: <%= order.totalPrice %>$
-                                </h2>
                                 <% }); %>
                         </ul>
-                        <% } %>
+                        <%- include('../includes/pagination.ejs', {currentPage: currentPage, nextPage: nextPage,
+                            previousPage: previousPage, lastPage: lastPage, hasNextPage: hasNextPage, hasPreviousPage:
+                            hasPreviousPage}) %>
+                            <% } %>
             </main>
             <%- include('../includes/end.ejs') %>
