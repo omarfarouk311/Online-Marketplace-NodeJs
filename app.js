@@ -1,55 +1,27 @@
 require('dotenv').config();
 const express = require('express');
-const fs = require('fs').promises;
-const crypto = require('crypto');
 const path = require('path');
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
 const authRouter = require('./routes/auth');
 const errorsController = require('./controllers/errors');
 const session = require('express-session');
-const { mongoConnect } = require('./util/database');
-const { store } = require('./util/database');
+const { mongoConnect, store } = require('./util/database');
 const User = require('./models/user');
 const { csrfSynchronisedProtection } = require('csrf-sync').csrfSync({
     getTokenFromRequest: req => req.body.csrfToken
 });
+const { storageEngine, fileFilter } = require('./util/multer configurations');
 const multer = require('multer');
 
 
 const app = express();
 app.set('view engine', 'ejs');
 
-const storageEngine = multer.diskStorage({
-    destination: async (req, file, cb) => {
-        try {
-            await fs.mkdir('public/images', { recursive: true });
-            cb(null, 'public/images');
-        }
-        catch (err) {
-            cb(err);
-        }
-    },
-    filename: (req, file, cb) => {
-        crypto.randomBytes(8, (err, buf) => {
-            if (err) return cb(err);
-            cb(null, `${buf.toString('hex')}_${file.originalname}`);
-        });
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-        cb(null, true);
-    }
-    else {
-        cb(null, false);
-        req.invalidFileType = true;
-    }
-}
-
 app.use(multer({ storage: storageEngine, fileFilter: fileFilter }).single('image'));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 //statically serving products images
 app.use('/public', express.static(path.join(__dirname, 'public')));
 //statically serving other public files
