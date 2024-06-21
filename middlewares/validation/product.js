@@ -17,9 +17,10 @@ exports.ProductValidation = [
     body('description', 'Description length must be at least 10 characters')
         .isLength({ min: 8 })
     ,
-    body('quantity', 'Quantity must be an integer number')
+    body('quantity', 'Quantity must be a positive integer number')
         .isInt({
             allow_leading_zeroes: false,
+            gt: 0
         })
         .trim()
 ]
