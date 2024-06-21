@@ -85,10 +85,10 @@ exports.addToCart = async (req, res, next) => {
 exports.deleteCartItem = async (req, res, next) => {
     try {
         await req.user.deleteFromCart(req.body.productId);
-        res.redirect('/cart');
+        return res.status(200).json({ message: 'Success!', numOfProducts: --req.user.cart.length });
     }
     catch (err) {
-        return next(err);
+        return res.status(500).json({ message: 'Failed to delete product from the cart' });
     }
 };
 

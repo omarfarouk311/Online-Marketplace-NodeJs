@@ -12,13 +12,12 @@
                                 <h1>
                                     <%= p.title %>
                                 </h1>
-                                <h2>Quantity: <%= p.quantity %>
+                                <h2>
+                                    Quantity: <%= p.quantity %>
                                 </h2>
-                                <form action="/cart-delete-item" method="POST">
-                                    <input type="hidden" value="<%= p._id %>" name="productId">
-                                    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
-                                    <button class="btn danger" type="submit">Delete</button>
-                                </form>
+                                <input type="hidden" value="<%= p._id %>" name="productId">
+                                <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+                                <button class="btn danger" type="button" onclick="deleteProduct(this)">Delete</button>
                             </li>
                             <% }) %>
                     </ul>
@@ -47,3 +46,4 @@
                                     <% } %>
             </main>
             <%- include('../includes/end.ejs') %>
+                <script src="/js/cart.js"></script>
