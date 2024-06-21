@@ -65,30 +65,7 @@ app.use('/error', errorsController.get500);
 
 app.use(errorsController.get404);
 
-app.use((err, req, res, next) => {
-    if (!('isAuthenticated' in res.locals)) {
-        res.locals.isAuthenticated = false;
-    }
-
-    if (err.statusCode === 403) {
-        return res.render('errors/403', {
-            pageTitle: 'Forbidden',
-            path: '/403'
-        });
-    }
-
-    if (err.statusCode === 404) {
-        return res.render('errors/404', {
-            pageTitle: 'Page not found',
-            path: '/404'
-        });
-    }
-
-    return res.render('errors/500', {
-        pageTitle: 'Error',
-        path: '/500'
-    });
-});
+app.use(errorsController.errorHandlingMiddleware);
 
 app.listen(process.env.PORT, () => {
     mongoConnect().catch(err => {
