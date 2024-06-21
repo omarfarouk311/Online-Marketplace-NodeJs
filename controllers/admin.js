@@ -119,7 +119,7 @@ exports.postDeleteProduct = async (req, res, next) => {
     try {
         const { productId } = req.body;
         await req.user.deleteProduct(productId);
-        return res.status(200).json({ message: 'Success!' });
+        return res.status(200).json({ message: 'Success!', numOfProducts: --req.user.products.length });
     }
     catch (err) {
         return res.status(500).json({ message: 'Failed to delete product.' });
