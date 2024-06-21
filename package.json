@@ -1,5 +1,5 @@
 {
-  "name": "project1",
+  "name": "online-marketplace",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^5.0.0",
     "csrf-sync": "^4.0.3",
     "dotenv": "^16.4.5",
