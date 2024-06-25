@@ -61,7 +61,7 @@ app.use(authRouter);
 
 app.use(shopRouter);
 
-app.use('/error', errorsController.get500);
+app.get('/error', errorsController.get500);
 
 app.use(errorsController.get404);
 
