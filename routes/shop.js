@@ -9,16 +9,18 @@ router.get('/products', shop_controller.getProducts);
 
 router.get('/products/:productId', shop_controller.getProductDetails);
 
-router.get('/cart', requireUser, shop_controller.getCart);
+router.use(requireUser);
 
-router.post('/cart', requireUser, shop_controller.addToCart);
+router.get('/cart', shop_controller.getCart);
 
-router.post('/cart-delete-item', requireUser, shop_controller.deleteCartItem);
+router.post('/cart', shop_controller.addToCart);
 
-router.post('/create-order', requireUser, shop_controller.CreateOrder);
+router.post('/cart-delete-item', shop_controller.deleteCartItem);
 
-router.get('/orders', requireUser, shop_controller.getOrders);
+router.post('/create-order', shop_controller.CreateOrder);
 
-router.get('/orders/:orderId', requireUser, shop_controller.getOrderInvoice);
+router.get('/orders', shop_controller.getOrders);
+
+router.get('/orders/:orderId', shop_controller.getOrderInvoice);
 
 module.exports = router;

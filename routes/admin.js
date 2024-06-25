@@ -5,16 +5,18 @@ const { requireUser } = require('../middlewares/authorization/auth');
 const { ProductValidation } = require('../middlewares/validation/product');
 const { authorizeProductModification } = require('../middlewares/authorization/user');
 
-router.get('/add-product', requireUser, admin_controller.getAddProduct);
+router.use(requireUser);
 
-router.post('/add-product', requireUser, ProductValidation, admin_controller.postAddProduct);
+router.get('/add-product', admin_controller.getAddProduct);
 
-router.get('/products', requireUser, admin_controller.getProducts);
+router.post('/add-product', ProductValidation, admin_controller.postAddProduct);
 
-router.get('/edit-product/:productId', requireUser, authorizeProductModification, admin_controller.getEditProduct);
+router.get('/products', admin_controller.getProducts);
 
-router.post('/edit-product', requireUser, authorizeProductModification, ProductValidation, admin_controller.postEditProduct);
+router.get('/edit-product/:productId', authorizeProductModification, admin_controller.getEditProduct);
 
-router.post('/delete-product', requireUser, authorizeProductModification, admin_controller.postDeleteProduct);
+router.post('/edit-product', authorizeProductModification, ProductValidation, admin_controller.postEditProduct);
+
+router.post('/delete-product', authorizeProductModification, admin_controller.postDeleteProduct);
 
 module.exports = router;
