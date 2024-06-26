@@ -6,8 +6,8 @@ exports.loginValidation = [
         .isEmail()
     ,
     body('password', 'Invalid Email or password')
-        .isLength({ min: 8 })
         .trim()
+        .isLength({ min: 8 })
 ]
 
 exports.signupValidation = [
@@ -22,16 +22,16 @@ exports.signupValidation = [
         })
     ,
     body('password')
+        .trim()
         .isLength({ min: 8 })
         .withMessage('Password length must be at least 8 characters')
-        .trim()
     ,
     body('confirmPassword', "Password and confirmation password must match")
+        .trim()
         .custom((confirmPassword, { req }) => {
             if (confirmPassword === req.body.password) return true;
             throw new Error();
         })
-        .trim()
 ]
 
 exports.resetValidation = [
@@ -47,14 +47,14 @@ exports.resetValidation = [
 
 exports.changePasswordValidation = [
     body('password')
+        .trim()
         .isLength({ min: 8 })
         .withMessage('Password length must be at least 8 characters')
-        .trim()
     ,
     body('confirmPassword', "Password and confirmation password doesn't match")
+        .trim()
         .custom((confirmPassword, { req }) => {
             if (confirmPassword === req.body.password) return true;
             throw new Error();
         })
-        .trim()
 ]
