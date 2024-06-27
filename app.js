@@ -67,8 +67,11 @@ app.use(errorsController.get404);
 
 app.use(errorsController.errorHandlingMiddleware);
 
-app.listen(process.env.PORT, () => {
-    mongoConnect().catch(err => {
-        console.err(err);
+mongoConnect()
+    .then(() => {
+        app.listen(process.env.PORT);
+    })
+    .catch(err => {
+        console.error('failed to connect to the database', err);
+        process.exit(1);
     });
-});
