@@ -1,5 +1,5 @@
 const fsPromises = require('fs').promises;
-const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
 const { diskStorage } = require('multer');
 
 exports.storageEngine = diskStorage({
@@ -13,10 +13,7 @@ exports.storageEngine = diskStorage({
         }
     },
     filename: (req, file, cb) => {
-        crypto.randomBytes(8, (err, buf) => {
-            if (err) return cb(err);
-            cb(null, `${buf.toString('hex')}_${file.originalname}`);
-        });
+        cb(null, `${uuidv4()}_${file.originalname}`);
     }
 });
 
