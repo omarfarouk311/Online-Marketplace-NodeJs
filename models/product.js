@@ -16,8 +16,8 @@ module.exports = class Products {
         return db.collection('products').find();
     }
 
-    static async findById(id) {
+    static findById(id) {
         const db = getDb();
-        return await db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
+        return db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
     }
 }

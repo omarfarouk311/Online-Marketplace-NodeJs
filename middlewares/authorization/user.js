@@ -1,56 +1,21 @@
-const { getDb } = require('../../util/database');
-const { ObjectId } = require('mongodb');
+exports.authorizeProductModification = (req, res, next) => {
+    const { _id: productId } = req.product
 
-exports.authorizeProductModification = async (req, res, next) => {
-    const db = getDb();
-    const { productId } = (req.method === 'POST' ? req.body : req.params);
-
-    try {
-        const found = await db.collection('products').findOne({ _id: ObjectId.createFromHexString(productId) });
-        if (!found) {
-            const err = new Error('Not found');
-            err.statusCode = 404;
-            throw err;
-        }
-
-        if (!req.user.products.find(prodId => prodId.toString() == productId)) {
-            const err = new Error('Access denied');
-            err.statusCode = 403;
-            throw err;
-        }
-
-        return next();
-    }
-    catch (err) {
+    if (!req.user.products.some(prodId => prodId.toString() === productId.toString())) {
+        const err = new Error('Access denied');
+        err.statusCode = 403;
         return next(err);
     }
-}
+    return next();
+};
 
-exports.authorizeInvoiceViewing = async (req, res, next) => {
-    const db = getDb();
-    const { orderId } = req.params;
+exports.authorizeInvoiceViewing = (req, res, next) => {
+    const { _id: userOrderId } = req.order;
 
-    try {
-        let found = await db.collection('orders').findOne({ _id: ObjectId.createFromHexString(orderId) });
-        if (!found) {
-            const err = new Error('Not Found');
-            err.statusCode = 404;
-            throw err;
-        }
-
-        found = await db.collection('users').findOne({
-            _id: req.user._id,
-            orders: ObjectId.createFromHexString(orderId)
-        });
-        if (!found) {
-            const err = new Error('Access denied');
-            err.statusCode = 403;
-            throw err;
-        }
-
-        return next();
-    }
-    catch (err) {
+    if (!req.user.orders.some(orderId => orderId.toString() === userOrderId.toString())) {
+        const err = new Error('Access denied');
+        err.statusCode = 403;
         return next(err);
     }
-}
+    return next();
+};

@@ -1,7 +1,6 @@
 const { ObjectId } = require('mongodb');
 const getDb = require('../util/database').getDb;
 const getClient = require('../util/database').getClient;
-const fs = require('fs').promises;
 
 module.exports = class User {
     constructor({ email, password, products, cart, orders, resetToken, resetTokenExpiry, _id }) {

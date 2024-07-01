@@ -29,12 +29,6 @@ exports.getProductDetails = async (req, res, next) => {
     const { productId } = req.params;
     try {
         const product = await Product.findById(productId);
-        if (!product) {
-            const err = new Error('Product not found');
-            err.statusCode = 404;
-            throw err;
-        }
-
         res.render('shop/product-detail', {
             pageTitle: product.title,
             product: product,
