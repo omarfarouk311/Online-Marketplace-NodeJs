@@ -20,6 +20,8 @@ exports.get500 = (req, res, next) => {
 };
 
 exports.errorHandlingMiddleware = (err, req, res, next) => {
+    console.error(err.message);
+
     if (!('isAuthenticated' in res.locals)) {
         res.locals.isAuthenticated = false;
     }

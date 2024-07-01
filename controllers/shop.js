@@ -173,10 +173,10 @@ exports.getOrderInvoice = async (req, res, next) => {
                     pdfDoc.image(prod.imageUrl, 450, y - 20, { fit: [80, 80] });
                 }
                 catch (err) {
-                    console.error('Image not found', err);
                     return next(err);
                 }
             }
+
             y += 40;
             pdfDoc
                 .fontSize(20)
@@ -195,13 +195,11 @@ exports.getOrderInvoice = async (req, res, next) => {
 
         writeStream.on('finish', () => {
             res.download(invoicePath, 'invoice.pdf', (err) => {
-                console.error(err);
                 if (err) return next(err);
             });
         });
 
         writeStream.on('error', (err) => {
-            console.error(err);
             return next(err);
         });
     }

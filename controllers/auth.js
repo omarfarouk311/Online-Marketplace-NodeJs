@@ -112,7 +112,7 @@ exports.postSignup = async (req, res, next) => {
             subject: 'Welcome to marketplace!',
             html: '<h2>Thank you for choosing our service!</h2>'
         }).catch(err => {
-            console.log(err);
+            console.error(err);
         });
     }
     catch (err) {
@@ -174,7 +174,7 @@ exports.postReset = async (req, res, next) => {
             <h3>Click this <a href="http://localhost:3000/reset/${updatedUser.resetToken}">link</a> to set a new password.</h3>
           `
             }).catch(err => {
-                console.log(err);
+                console.error(err);
             });
         });
     }
@@ -256,7 +256,7 @@ exports.postChangePassword = async (req, res, next) => {
         user.resetToken = user.resetTokenExpiry = null;
         const updatedUser = new User({ ...user, password: hashedPassword });
         await updatedUser.updateUser();
-        
+
         const email = user.email;
         res.redirect('/login');
         db.collection('sessions').deleteMany({ "session.userId": userId });
@@ -266,7 +266,7 @@ exports.postChangePassword = async (req, res, next) => {
             subject: 'Password Reset',
             html: '<h2>Your password has been changed successfully.</h2>'
         }).catch(err => {
-            console.log(err);
+            console.error(err);
         });
     }
     catch (err) {
