@@ -273,3 +273,20 @@ exports.postChangePassword = async (req, res, next) => {
         return next(err);
     }
 }
+
+exports.authenticateUser = async (req, res, next) => {
+    res.locals.isAuthenticated = false;
+    res.locals.csrfToken = req.csrfToken();
+
+    if (!req.session.userId) return next();
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) return next();
+        req.user = new User(user);
+        res.locals.isAuthenticated = true;
+        return next();
+    }
+    catch (err) {
+        return next(err);
+    }
+};

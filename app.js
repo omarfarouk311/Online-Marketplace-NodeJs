@@ -1,18 +1,18 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const adminRouter = require('./routes/admin');
-const shopRouter = require('./routes/shop');
-const authRouter = require('./routes/auth');
-const errorsController = require('./controllers/errors');
 const session = require('express-session');
 const { mongoConnect, store } = require('./util/database');
-const User = require('./models/user');
 const { csrfSynchronisedProtection } = require('csrf-sync').csrfSync({
     getTokenFromRequest: req => req.body.csrfToken
 });
 const { storageEngine, fileFilter } = require('./util/multer configurations');
 const multer = require('multer');
+const adminRouter = require('./routes/admin');
+const shopRouter = require('./routes/shop');
+const authRouter = require('./routes/auth');
+const errorsController = require('./controllers/errors');
+const { authenticateUser } = require('./controllers/auth');
 
 
 const app = express();
@@ -37,26 +37,11 @@ app.use(session({
 
 app.use(csrfSynchronisedProtection);
 
-app.use(async (req, res, next) => {
-    res.locals.isAuthenticated = false;
-    res.locals.csrfToken = req.csrfToken();
-
-    if (!req.session.userId) return next();
-    try {
-        const user = await User.findById(req.session.userId);
-        if (!user) return next();
-        req.user = new User(user);
-        res.locals.isAuthenticated = true;
-        return next();
-    }
-    catch (err) {
-        return next(err);
-    }
-});
-
-app.use('/admin', adminRouter);
+app.use(authenticateUser);
 
 app.use(authRouter);
+
+app.use('/admin', adminRouter);
 
 app.use(shopRouter);
 
