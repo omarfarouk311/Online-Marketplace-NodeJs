@@ -49,7 +49,7 @@ It allows users to register, login, reset password, see product details, add pro
   ```
 
 ## Usage
-* Open your browser and navigate to http://localhost:3000.
+* Open your browser and navigate to http://localhost:listening-port.
 * Register a new user account.
 * Login with your new account.
 * Use the admin interface to add, update, or delete products.
