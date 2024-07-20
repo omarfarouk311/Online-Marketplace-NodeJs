@@ -48,7 +48,7 @@ module.exports = class User {
         }
 
         else {
-            const result = await db.collection('products').findOneAndUpdate(
+            await db.collection('products').updateOne(
                 { _id: product._id },
                 { $set: product }
             );
@@ -62,7 +62,7 @@ module.exports = class User {
 
     async deleteProduct(productId) {
         const db = getDb();
-        await db.collection('products').findOneAndDelete(
+        await db.collection('products').deleteOne(
             { _id: ObjectId.createFromHexString(productId) }
         );
 
@@ -72,13 +72,14 @@ module.exports = class User {
         );
     }
 
-    async getCart() {
+    async getCart(session) {
         const db = getDb();
         const cartItems = [];
         const removed_products = [];
+        const options = session ? { session } : {};
 
         for (const cartProduct of this.cart) {
-            const product = await db.collection('products').findOne({ _id: cartProduct.productId });
+            const product = await db.collection('products').findOne({ _id: cartProduct.productId }, options);
             if (product) {
                 cartItems.push({ ...product, quantity: cartProduct.quantity });
             }
@@ -90,7 +91,8 @@ module.exports = class User {
         //updating cart based on if there are products in it that has been removed by an admin
         await db.collection('users').updateOne(
             { _id: this._id },
-            { $pull: { cart: { productId: { $in: removed_products } } } }
+            { $pull: { cart: { productId: { $in: removed_products } } } },
+            options
         );
         return cartItems;
     }
@@ -98,12 +100,14 @@ module.exports = class User {
     async addToCart(productId) {
         const db = getDb();
         const idx = this.cart.findIndex(cp => cp.productId == productId);
+
         if (idx != -1) {
             await db.collection('users').updateOne(
                 { _id: this._id, 'cart.productId': ObjectId.createFromHexString(productId) },
                 { $inc: { 'cart.$.quantity': 1 } }
             );
         }
+
         else {
             const newDoc = { productId: ObjectId.createFromHexString(productId), quantity: 1 };
             await db.collection('users').updateOne(
@@ -123,15 +127,15 @@ module.exports = class User {
 
     async createOrder() {
         const db = getDb();
-        const client = getClient();
-        const session = client.startSession();
         let cartProducts = []
         let totalPrice = 0;
+        const client = getClient();
+        const session = client.startSession();
 
         try {
             session.startTransaction();
 
-            cartProducts = await this.getCart();
+            cartProducts = await this.getCart(session);
             if (!cartProducts.length) return true;
 
             for (const prod of cartProducts) {
@@ -142,36 +146,36 @@ module.exports = class User {
                 totalPrice += prod.price * prod.quantity;
             }
 
-            for (const cp of cartProducts) {
-                await db.collection('products').updateOne(
-                    { _id: cp._id },
-                    { $inc: { productQuantity: -cp.quantity } },
-                    { session }
-                );
-            }
+            const productsIds = cartProducts.map(cp => cp._id);
+            await db.collection('products').updateMany(
+                { _id: { $in: productsIds } },
+                { $inc: { productQuantity: -cartProducts.quantity } },
+                { session }
+            )
 
             await session.commitTransaction();
         }
         catch (err) {
             await session.abortTransaction();
-            throw new Error(err);
+            throw err;
         }
         finally {
             await session.endSession();
         }
 
-        const result = await db.collection('orders').insertOne(
-            { items: cartProducts, totalPrice: totalPrice }
+        const { insertedId } = await db.collection('orders').insertOne(
+            {
+                items: cartProducts,
+                totalPrice: totalPrice
+            }
         );
 
         await db.collection('users').updateOne(
             { _id: this._id },
-            { $push: { orders: result.insertedId } }
-        );
-
-        await db.collection('users').updateOne(
-            { _id: this._id },
-            { $set: { cart: [] } }
+            {
+                $push: { orders: insertedId },
+                $set: { cart: [] }
+            }
         );
 
         return true;
