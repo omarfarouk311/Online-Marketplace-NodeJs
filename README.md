@@ -22,40 +22,38 @@ It allows users to register, login, reset password, see product details, add pro
 
 ## Installation
 1. Clone the repository:
-  ```sh
-  git clone https://github.com/omarfarouk311/Online-Marketplace-NodeJs.git
-  cd Online-Marketplace-NodeJs
-  ```
+    ```sh
+    git clone https://github.com/omarfarouk311/Online-Marketplace-NodeJs.git
+    cd Online-Marketplace-NodeJs
+    ```
 
 2. Install dependencies:
-  ```sh
-  npm install
-  ```
+    ```sh
+    npm install
+    ```
 
 3. Set up environment variables
-  * Create a .env file in the root directory of the project.
-  * Add the following environment variables to the .env file:
-  ```sh
-  COOKIE_SECRET1=your-cookie-secret
-  DB_URI=your-mongodb-uri
-  MAILGUN_API_KEY=your-mailgun-api-key
-  MAILGUN_DOMAIN=your-mailgun-domain
-  SENDER_EMAIL=your-sender-email
-  PORT=listening-port
-  ```
+    * Create a .env file in the root directory of the project.
+    * Add the following environment variables to the .env file:
+    ```sh
+    COOKIE_SECRET1=your-cookie-secret
+    DB_URI=your-mongodb-uri
+    MAILGUN_API_KEY=your-mailgun-api-key
+    MAILGUN_DOMAIN=your-mailgun-domain
+    SENDER_EMAIL=your-sender-email
+    PORT=listening-port
+    ```
+
 4. Run the application:
-  ```sh
-  npm start
-  ```
+    ```sh
+    npm start
+    ```
 
 ## Usage
-* Open your browser and navigate to http://localhost:listening-port.
+* Open your browser and navigate to `http://localhost:listening-port`.
 * Register a new user account.
 * Login with your new account.
 * Use the admin interface to add, update, or delete products.
 * Explore the products, add them to your cart, and place orders.
 * Download the invoices.
 * Try resetting your password.
-
-## Contributing
-Contributions are welcome! Please fork this repository and create a pull request with your changes.
